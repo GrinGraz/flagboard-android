@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cl.gringraz.flagboard_android">
+
+    <application>
+        <activity
+            android:name=".FlagBoardActivity"
+            android:exported="false"
+            android:label="@string/title_activity_flag_board"
+            android:theme="@style/Theme.Flagboard" />
+    </application>
+
+</manifest>
