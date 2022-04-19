@@ -28,31 +28,26 @@ object FlagBoard {
     internal var thisFeatureFlagsMap: Map<String, Any> = emptyMap()
 
     fun init(@NonNull featureFlagsMap: Map<String, Any>): FlagBoard? {
-        if (BuildConfig.DEBUG) {
-            if (flagBoardState == FlagBoardState.INITIALIZED) {
-                println("FlagBoard was already initialized. Previous parameters will be " +
-                        "overwritten")
-            }
-            flagBoardState = FlagBoardState.INITIALIZED
-            thisFeatureFlagsMap = featureFlagsMap
-            featureFlags = parseToFeatureFlags(featureFlagsMap)
-            println("FlagBoard is initialized")
-            return this
+        if (flagBoardState == FlagBoardState.INITIALIZED) {
+            println("FlagBoard was already initialized. Previous parameters will be " +
+                    "overwritten")
         }
-        return null
+        flagBoardState = FlagBoardState.INITIALIZED
+        thisFeatureFlagsMap = featureFlagsMap
+        featureFlags = parseToFeatureFlags(featureFlagsMap)
+        println("FlagBoard is initialized")
+        return this
     }
 
     fun open(@NonNull context: Context) {
-        if (BuildConfig.DEBUG) {
-            when(flagBoardState) {
-                FlagBoardState.INITIALIZED -> {
-                    FlagBoardActivity.openFlagBoard(context)
-                }
-                FlagBoardState.NOT_INITIALIZED -> println("FlagBoard is not initialized. Before opening" +
-                        " call the FlagBoard.init(@NonNull featureFlagsMap: Map<String, Any>) function")
-                FlagBoardState.UNKNOWN -> println("FlagBoard is a inconsistent state. Recall the " +
-                        "FlagBoard.init(@NonNull featureFlagsMap: Map<String, Any>) function")
+        when(flagBoardState) {
+            FlagBoardState.INITIALIZED -> {
+                FlagBoardActivity.openFlagBoard(context)
             }
+            FlagBoardState.NOT_INITIALIZED -> println("FlagBoard is not initialized. Before opening" +
+                    " call the FlagBoard.init(@NonNull featureFlagsMap: Map<String, Any>) function")
+            FlagBoardState.UNKNOWN -> println("FlagBoard is a inconsistent state. Recall the " +
+                    "FlagBoard.init(@NonNull featureFlagsMap: Map<String, Any>) function")
         }
     }
 
