@@ -71,9 +71,9 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'cl.gringraz'
-                artifactId = 'flagboard_android'
-                version = '0.0.1-alpha'
+                groupId = 'com.github.GrinGraz'
+                artifactId = 'flagboard-android'
+                version = '0.0.2-alpha'
             }
         }
     }

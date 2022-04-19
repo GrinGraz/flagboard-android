@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import cl.gringraz.flagboard.ui.theme.FlagboardTheme
-import cl.gringraz.flagboard_android.FlagBoard
+//import cl.gringraz.flagboard_android.FlagBoard
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,11 +32,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String) {
     val context = LocalContext.current
-    FlagBoard.init(mapOf("Boolean flag" to true, "String flag" to "hello", "Int flag"
-            to 1, "Json flag" to "{\"key\":\"value\"}"))
-    Text(text = "Hello $name", modifier = Modifier.clickable {
-        FlagBoard.open(context)
-    })
+//    FlagBoard.init(mapOf("Boolean flag" to true, "String flag" to "hello", "Int flag"
+//            to 1, "Json flag" to "{\"key\":\"value\"}"))
+//    Text(text = "Hello $name", modifier = Modifier.clickable {
+//        FlagBoard.open(context)
+//    })
 }
 
 @Preview(showBackground = true)
