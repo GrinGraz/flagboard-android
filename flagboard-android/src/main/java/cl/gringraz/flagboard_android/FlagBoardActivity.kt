@@ -60,7 +60,7 @@ private fun Greeting() {
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         item { Text(text = "Feature Flag name") }
-        items(items = FlagBoard.featureFlags, key = { it.hashCode() }) {
+        items(items = FlagBoard.featureFlags) {
             Row {
                 when (it) {
                     is FlagBoard.BooleanFlag -> Text(text = it.param.key.value, modifier = Modifier
