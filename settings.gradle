@@ -10,7 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven {
+            url 'https://jitpack.io'
+            credentials { username 'jp_suo4hd5t82a5pqkm0qnddotqpj' }
+        }
     }
 }
 rootProject.name = "flagboard"
