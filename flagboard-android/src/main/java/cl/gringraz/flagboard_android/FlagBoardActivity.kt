@@ -10,10 +10,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,13 +28,18 @@ internal class FlagBoardActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FlagboardTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                Scaffold(
+                    topBar = { MyTopBar(context = this) },
                 ) {
-                    Greeting()
+                    FlagsList()
+//                    Surface(
+//                        modifier = Modifier.fillMaxSize(),
+//                        color = MaterialTheme.colors.background
+//                    ) {
+//                        FlagsList()
+//                    }
                 }
+
             }
         }
     }
@@ -43,48 +50,60 @@ internal class FlagBoardActivity : ComponentActivity() {
                 val intent = Intent(context, FlagBoardActivity::class.java)
                 ContextCompat.startActivity(context, intent, null)
             } else {
-                println("FlagBoard is either not initialized or in a inconsistent state. " +
-                        "Recall FlagBoard.init(@NonNull featureFlagsMap: Map<String, Any>) function")
+                println(
+                    "FlagBoard is either not initialized or in a inconsistent state. " +
+                            "Recall FlagBoard.init(@NonNull featureFlagsMap: Map<String, Any>) function"
+                )
                 FlagBoard.flagBoardState = FlagBoard.FlagBoardState.UNKNOWN
             }
         }
     }
 }
 
+@Composable
+private fun MyTopBar(context: Context) {
+    TopAppBar(
+        title = { Text(text = "FlagBoard") },
+        navigationIcon = {
+            IconButton(onClick = { (context as ComponentActivity).finish() }) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = null)
+            }
+        }
+    )
+}
 
 @Composable
-private fun Greeting() {
-    val context = LocalContext.current
+private fun FlagsList() {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        item { Text(text = "Feature Flag name") }
         items(items = FlagBoard.featureFlags) {
-            Row {
-                when (it) {
-                    is FlagBoard.BooleanFlag -> Text(text = it.param.key.value, modifier = Modifier
-                        .padding
-                            (8.dp)
-                        .clickable { mToast(context, "${it.param.value}") })
-                    is FlagBoard.IntFlag -> Text(text = it.param.key.value, modifier = Modifier
-                        .padding
-                            (8.dp)
-                        .clickable { mToast(context, "${it.param.value}") })
-                    is FlagBoard.JsonFlag -> Text(text = it.param.key.value, modifier = Modifier
-                        .padding
-                            (8.dp)
-                        .clickable { mToast(context, "${it.param.value}") })
-                    is FlagBoard.StringFlag -> Text(text = it.param.key.value, modifier = Modifier
-                        .padding
-                            (8.dp)
-                        .clickable { mToast(context, it.param.value) })
-                    is FlagBoard.UnknownFlag -> Text(text = "Unknown flag type", modifier = Modifier
-                        .padding
-                            (8.dp)
-                        .clickable { mToast(context, it.type.javaClass.name) })
-                }
+            when (it) {
+                is FeatureFlag.BooleanFlag -> RowBoolean(param = it.param)
+                is FeatureFlag.IntFlag -> RowBoolean(param = it.param)
+                is FeatureFlag.JsonFlag -> RowBoolean(param = it.param)
+                is FeatureFlag.StringFlag -> RowBoolean(param = it.param)
+                is FeatureFlag.UnknownFlag -> RowBoolean(param = it.param)
             }
+        }
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+@Composable
+private fun RowBoolean(param: Param<*>) {
+    val context = LocalContext.current
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Text(text = param.key.value, modifier = Modifier
+            .clickable { mToast(context, "${param.value}") }
+            .padding(8.dp))
+        if ((param.value as? Boolean) != null) {
+            val checkedState = remember { mutableStateOf(param.value) }
+            Switch(modifier = Modifier.padding(0.dp), checked = checkedState.value, onCheckedChange
+            = {
+                checkedState.value = it
+            })
         }
     }
 }

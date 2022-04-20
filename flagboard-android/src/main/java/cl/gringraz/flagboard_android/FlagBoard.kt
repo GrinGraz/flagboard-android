@@ -4,24 +4,25 @@ import android.content.Context
 import androidx.annotation.NonNull
 import org.json.JSONObject
 
+@JvmInline
+internal value class Key(val value: String)
+internal data class Param<T>(val key: Key, val value: T)
+
+internal sealed interface FeatureFlag {
+    @JvmInline
+    value class IntFlag(val param: Param<Int>) : FeatureFlag
+    @JvmInline
+    value class JsonFlag(val param: Param<JSONObject>) : FeatureFlag
+    @JvmInline
+    value class StringFlag(val param: Param<String>) : FeatureFlag
+    @JvmInline
+    value class BooleanFlag(val param: Param<Boolean>) : FeatureFlag
+    @JvmInline
+    value class UnknownFlag(val param: Param<Class<*>>) : FeatureFlag
+}
+
 
 object FlagBoard {
-    @JvmInline
-    internal value class Key(val value: String)
-    internal data class Param<T>(val key: Key, val value: T)
-
-    sealed interface FeatureFlag
-    @JvmInline
-    internal value class IntFlag(val param: Param<Int>) : FeatureFlag
-    @JvmInline
-    internal value class JsonFlag(val param: Param<JSONObject>) : FeatureFlag
-    @JvmInline
-    internal value class StringFlag(val param: Param<String>) : FeatureFlag
-    @JvmInline
-    internal value class BooleanFlag(val param: Param<Boolean>) : FeatureFlag
-    @JvmInline
-    internal value class UnknownFlag(val type: Any) : FeatureFlag
-
     internal var flagBoardState: FlagBoardState = FlagBoardState.NOT_INITIALIZED
 
     internal var featureFlags: List<FeatureFlag> = emptyList()
@@ -54,21 +55,23 @@ object FlagBoard {
     private fun parseToFeatureFlags(featureFlagsMap: Map<String, Any>): List<FeatureFlag> =
         featureFlagsMap.map { entry ->
             when (val value = entry.value) {
-                is Int -> IntFlag(Param(key = Key(value = entry.key), value = value))
+                is Int -> FeatureFlag.IntFlag(Param(key = Key(value = entry.key), value = value))
                 is String -> getStringType(Param(key = Key(value = entry.key), value = value))
-                is Boolean -> BooleanFlag(Param(key = Key(value = entry.key), value = value))
-                else -> UnknownFlag(entry.value)
+                is Boolean -> FeatureFlag.BooleanFlag(Param(key = Key(value = entry.key), value =
+                value))
+                else -> FeatureFlag.UnknownFlag(Param(key = Key(value = entry.key), value = entry
+                    .value::class.java))
             }
         }
 
     private fun getStringType(param: Param<String>): FeatureFlag = when {
-        param.value.contains("{") -> JsonFlag(
+        param.value.contains("{") -> FeatureFlag.JsonFlag(
             param = Param(
                 key = param.key,
-                value = JSONObject(param.value)
+                value = try { JSONObject(param.value) } catch (e: Exception) { JSONObject("") }
             )
         )
-        else -> StringFlag(param = param)
+        else -> FeatureFlag.StringFlag(param = param)
     }
 
     internal enum class FlagBoardState {
