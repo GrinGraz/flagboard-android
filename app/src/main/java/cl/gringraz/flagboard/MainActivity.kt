@@ -35,11 +35,11 @@ fun Greeting(name: String) {
     val context = LocalContext.current
 
     Text(text = "Hello $name", modifier = Modifier.clickable {
-        FlagBoard.init(mapOf("Boolean flag Boolean flag Boolean flag Boolean flag" to true,
+        FlagBoard.init(featureFlagsMap = mapOf("Boolean flag Boolean flag Boolean flag Boolean flag" to true,
             "String flag" to "hello", "Int" +
                 " flag"
                 to 1, "Json flag" to "{\"key\":\"value\"}"))
-            ?.open(context = context)
+            .open(context = context)
     })
 }
 
