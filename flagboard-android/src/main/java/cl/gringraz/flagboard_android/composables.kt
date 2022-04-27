@@ -3,7 +3,6 @@ package cl.gringraz.flagboard_android
 import android.content.Context
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -14,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +23,7 @@ import org.json.JSONObject
 @Composable
 fun MyTopBar(context: Context) {
     TopAppBar(
+        backgroundColor = Color.Black,
         title = { Text(text = "FlagBoard") },
         navigationIcon = {
             IconButton(onClick = { (context as ComponentActivity).finish() }) {
@@ -42,7 +43,7 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
         Icon(painter = painterResource(id = getIcon(param)), modifier = Modifier.padding(8.dp), contentDescription = null)
         Text(text = param.key.value, modifier = Modifier
             .weight(1f)
-            .padding(start = 0.dp, top = 8.dp, bottom = 8.dp))
+            .padding(start = 0.dp))
         if ((param.value as? Boolean) != null) {
             val checkedState = remember { mutableStateOf(param.value) }
             Switch(checked = checkedState.value, onCheckedChange
@@ -56,7 +57,7 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
 
 internal fun getIcon(param: Param<*>): Int {
     return when(param.value) {
-        is Boolean -> R.drawable.ic_resource_boolean
+        is Boolean -> R.drawable.ic_boolean
         is String -> R.drawable.ic_abc
         is Int -> R.drawable.ic_number
         is JSONObject -> R.drawable.ic_json

@@ -54,7 +54,7 @@ private fun FlagsList() {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        items(items = FlagBoard.featureFlags) {
+        items(items = FlagBoard.parseToFeatureFlags(FlagBoard.thisFeatureFlagsMap?.toMap()!!)) {
             when (it) {
                 is FeatureFlag.BooleanFlag -> ItemRow(param = it.param)
                 is FeatureFlag.IntFlag     -> ItemRow(param = it.param) { Toast.makeText(
@@ -74,12 +74,6 @@ private fun FlagsList() {
 @Composable
 fun DefaultPreview() {
     FlagboardTheme {
-        FlagBoard.init(featureFlagsMap =
-            mapOf(
-                "Boolean flag" to true, "String flag" to "hello", "Int flag"
-                        to 1, "Json flag" to "{\"key\":\"value\"}", "Unknown flag" to 0.0F
-            )
-        )
         FlagsList()
     }
 }

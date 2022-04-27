@@ -78,7 +78,7 @@ object FlagBoard {
         }
     }
 
-    private fun parseToFeatureFlags(featureFlagsMap: Map<String, Any>): List<FeatureFlag> =
+    internal fun parseToFeatureFlags(featureFlagsMap: Map<String, Any>): List<FeatureFlag> =
         featureFlagsMap.map { entry ->
             when (val value = entry.value) {
                 is Int     -> FeatureFlag.IntFlag(Param(key = Key(value = entry.key),

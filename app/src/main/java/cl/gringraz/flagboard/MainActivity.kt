@@ -33,13 +33,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String) {
     val context = LocalContext.current
+    val map = mapOf("Boolean flag Boolean flag Boolean flag Boolean flag" to true,
+        "String flag" to "hello", "Int" +
+                " flag"
+                to 1, "Json flag" to "{\"key\":\"value\"}")
+    FlagBoard.init(featureFlagsMap = map)
 
     Text(text = "Hello $name", modifier = Modifier.clickable {
-        FlagBoard.init(featureFlagsMap = mapOf("Boolean flag Boolean flag Boolean flag Boolean flag" to true,
-            "String flag" to "hello", "Int" +
-                " flag"
-                to 1, "Json flag" to "{\"key\":\"value\"}"))
-            .open(context = context)
+        FlagBoard.open(context = context)
     })
 }
 
