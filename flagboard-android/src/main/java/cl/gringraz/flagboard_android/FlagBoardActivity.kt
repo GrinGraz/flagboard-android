@@ -11,11 +11,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import cl.gringraz.flagboard_android.ui.theme.FlagboardTheme
+import cl.gringraz.flagboard_android.ui.theme.Purple200
 
 internal class FlagBoardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +68,7 @@ private fun FlagsList() {
                 is FeatureFlag.UnknownFlag -> ItemRow(param = it.param) { Toast.makeText(
                     context, "${it.param.value}", Toast.LENGTH_SHORT).show() }
             }
+            Divider(color = Color.LightGray)
         }
     }
 }
