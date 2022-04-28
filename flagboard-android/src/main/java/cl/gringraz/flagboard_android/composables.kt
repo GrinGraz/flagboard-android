@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -51,7 +54,7 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
         Icon(painter = painterResource(id = getIcon(param)), contentDescription = null)
         Text(text = param.key.value, fontSize = 16.sp, modifier = Modifier
             .weight(1f)
-            .padding(start = 8.dp))
+            .padding(start = 12.dp))
         if ((param.value as? Boolean) != null) {
             val checkedState = remember { mutableStateOf(param.value) }
             Switch(checked = checkedState.value, onCheckedChange
@@ -59,6 +62,30 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
                 checkedState.value = it
                 FlagBoard.thisFeatureFlagsMap?.set(param.key.value, it)
             })
+        }
+    }
+}
+
+@Composable
+fun FlagList() {
+    val context = LocalContext.current
+    val items = FlagBoard.parseToFeatureFlags(FlagBoard.thisFeatureFlagsMap?.toMap()!!)
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        itemsIndexed(items = items) { index, item ->
+            when (item) {
+                is FeatureFlag.BooleanFlag -> ItemRow(param = item.param)
+                is FeatureFlag.IntFlag     -> ItemRow(param = item.param) { Toast.makeText(
+                    context, "${item.param.value}", Toast.LENGTH_SHORT).show() }
+                is FeatureFlag.JsonFlag    -> ItemRow(param = item.param) { Toast.makeText(
+                    context, "${item.param.value}", Toast.LENGTH_SHORT).show() }
+                is FeatureFlag.StringFlag  -> ItemRow(param = item.param) { Toast.makeText(
+                    context, item.param.value, Toast.LENGTH_SHORT).show() }
+                is FeatureFlag.UnknownFlag -> ItemRow(param = item.param) { Toast.makeText(
+                    context, "${item.param.value}", Toast.LENGTH_SHORT).show() }
+            }
+            if (index < items.lastIndex) Divider(color = Color.LightGray, thickness = 0.5.dp)
         }
     }
 }

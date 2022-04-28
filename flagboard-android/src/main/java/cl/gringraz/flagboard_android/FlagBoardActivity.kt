@@ -27,7 +27,7 @@ internal class FlagBoardActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { MyTopBar(context = this) },
                 ) {
-                    FlagsList()
+                    FlagList()
                 }
 
             }
@@ -50,33 +50,15 @@ internal class FlagBoardActivity : ComponentActivity() {
     }
 }
 
-@Composable
-private fun FlagsList() {
-    val context = LocalContext.current
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-    ) {
-        items(items = FlagBoard.parseToFeatureFlags(FlagBoard.thisFeatureFlagsMap?.toMap()!!)) {
-            when (it) {
-                is FeatureFlag.BooleanFlag -> ItemRow(param = it.param)
-                is FeatureFlag.IntFlag     -> ItemRow(param = it.param) { Toast.makeText(
-                    context, "${it.param.value}", Toast.LENGTH_SHORT).show() }
-                is FeatureFlag.JsonFlag    -> ItemRow(param = it.param) { Toast.makeText(
-                    context, "${it.param.value}", Toast.LENGTH_SHORT).show() }
-                is FeatureFlag.StringFlag  -> ItemRow(param = it.param) { Toast.makeText(
-                    context, it.param.value, Toast.LENGTH_SHORT).show() }
-                is FeatureFlag.UnknownFlag -> ItemRow(param = it.param) { Toast.makeText(
-                    context, "${it.param.value}", Toast.LENGTH_SHORT).show() }
-            }
-            Divider(color = Color.LightGray)
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     FlagboardTheme {
-        FlagsList()
+        val map = mapOf("Boolean flag Boolean flag Boolean flag Boolean flag" to true,
+            "String flag" to "hello", "Int" +
+                    " flag"
+                    to 1, "Json flag" to "{\"key\":\"value\"}")
+        FlagBoard.thisFeatureFlagsMap = map.toMutableMap()
+        FlagList()
     }
 }
