@@ -1,5 +1,6 @@
 package cl.gringraz.flagboard_android
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.NonNull
@@ -7,6 +8,7 @@ import cl.gringraz.flagboard_android.data.models.FeatureFlag
 import cl.gringraz.flagboard_android.data.models.Key
 import cl.gringraz.flagboard_android.data.models.Param
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 
 object FlagBoard {
 
@@ -21,8 +23,13 @@ object FlagBoard {
 
     internal var featureFlags: List<FeatureFlag> = emptyList()
     internal var thisFeatureFlagsMap: MutableMap<String, Any>? = null
+    private lateinit var ctxReference: WeakReference<Context>
 
-    fun init(context: Context,/*env: Env = Env.LOCAL, */@NonNull featureFlagsMap: Map<String, Any>): FlagBoard {
+    fun init(context: Context) {
+        this.ctxReference = WeakReference(context)
+    }
+
+    fun loadFlags(/*env: Env = Env.LOCAL, */@NonNull featureFlagsMap: Map<String, Any>): FlagBoard {
         println("FlagBoard is initializing")
         if (flagBoardState == FlagBoardState.INITIALIZED) {
             println("FlagBoard was already initialized. Previous parameters will be " +
@@ -32,7 +39,7 @@ object FlagBoard {
 //        this.env = env
         thisFeatureFlagsMap = featureFlagsMap.toMutableMap()
         featureFlags = parseToFeatureFlags(featureFlagsMap)
-        loadData(context = context)
+        ctxReference.get()?.let { loadData(context = it) } ?: println("FlagBoard not load flags")
         println("FlagBoard is initialized")
         return this
     }

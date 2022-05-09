@@ -39,7 +39,7 @@ fun Greeting(name: String) {
         "String flag" to "hello",
         "Int flag" to 1,
         "Json flag" to "{\"key\":\"value\"}")
-    FlagBoard.init(featureFlagsMap = map, context = context)
+    FlagBoard.loadFlags(featureFlagsMap = map, context = context)
 
     Text(text = "Hello $name", modifier = Modifier.clickable {
         FlagBoard.open(context = context)
