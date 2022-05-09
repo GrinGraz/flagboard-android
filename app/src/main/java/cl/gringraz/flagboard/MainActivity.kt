@@ -21,7 +21,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FlagboardTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
                     Greeting("Android")
                 }
@@ -33,10 +32,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String) {
     val context = LocalContext.current
-    val map = mapOf("Boolean flag Boolean flag Boolean flag Boolean flag" to true,
-        "String flag" to "hello", "Int" +
-                " flag"
-                to 1, "Json flag" to "{\"key\":\"value\"}")
+    val map = mapOf(
+        "Boolean flag" to true,
+        "Boolean flag2" to false,
+        "Boolean flag3" to true,
+        "String flag" to "hello",
+        "Int flag" to 1,
+        "Json flag" to "{\"key\":\"value\"}")
     FlagBoard.init(featureFlagsMap = map)
 
     Text(text = "Hello $name", modifier = Modifier.clickable {

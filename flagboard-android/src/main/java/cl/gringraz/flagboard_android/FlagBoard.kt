@@ -1,41 +1,26 @@
 package cl.gringraz.flagboard_android
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.annotation.NonNull
+import cl.gringraz.flagboard_android.data.models.FeatureFlag
+import cl.gringraz.flagboard_android.data.models.Key
+import cl.gringraz.flagboard_android.data.models.Param
 import org.json.JSONObject
 
-@JvmInline
-internal value class Key(val value: String)
-internal data class Param<T>(val key: Key, val value: T)
-
-//enum class Env {
-//    REMOTE,
-//    LOCAL,
-//}
-
-internal sealed interface FeatureFlag {
-    @JvmInline
-    value class IntFlag(val param: Param<kotlin.Int>) : FeatureFlag
-
-    @JvmInline
-    value class JsonFlag(val param: Param<JSONObject>) : FeatureFlag
-
-    @JvmInline
-    value class StringFlag(val param: Param<String>) : FeatureFlag
-
-    @JvmInline
-    value class BooleanFlag(val param: Param<Boolean>) : FeatureFlag
-
-    @JvmInline
-    value class UnknownFlag(val param: Param<Class<*>>) : FeatureFlag
-}
-
 object FlagBoard {
+
+    internal enum class FlagBoardState {
+        INITIALIZED,
+        NOT_INITIALIZED,
+        UNKNOWN,
+    }
+
     internal var flagBoardState: FlagBoardState = FlagBoardState.NOT_INITIALIZED
     /*internal var env: Env = Env.LOCAL*/
 
-    internal var featureFlags: kotlin.collections.List<FeatureFlag> = emptyList()
-    internal var thisFeatureFlagsMap: kotlin.collections.MutableMap<String, Any>? = null
+    internal var featureFlags: List<FeatureFlag> = emptyList()
+    internal var thisFeatureFlagsMap: MutableMap<String, Any>? = null
 
     fun init(/*env: Env = Env.LOCAL, */@NonNull featureFlagsMap: Map<String, Any>): FlagBoard {
         println("FlagBoard is initializing")
@@ -64,9 +49,10 @@ object FlagBoard {
 //        return this
 //    }
 
-    fun getFeatureFlag(key: String) = thisFeatureFlagsMap?.get(key)//[key]
+    fun getFeatureFlag(key: String) = thisFeatureFlagsMap?.get(key)
 
     fun open(@NonNull context: Context) {
+        loadData(context)
         when (flagBoardState) {
             FlagBoardState.INITIALIZED     -> {
                 FlagBoardActivity.openFlagBoard(context)
@@ -106,9 +92,18 @@ object FlagBoard {
         else                      -> FeatureFlag.StringFlag(param = param)
     }
 
-    internal enum class FlagBoardState {
-        INITIALIZED,
-        NOT_INITIALIZED,
-        UNKNOWN,
+    private fun loadData(context: Context) {
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("flagboard",
+            Context.MODE_PRIVATE)
+
+        if (sharedPreferences.all.isEmpty()) {
+            thisFeatureFlagsMap?.entries?.forEach { entry ->
+                if (entry.value is Boolean) {
+                    sharedPreferences.edit().putBoolean(entry.key, entry.value as Boolean).apply()
+                }
+            }
+        } else {
+            thisFeatureFlagsMap = sharedPreferences.all as MutableMap<String, Any>?
+        }
     }
 }
