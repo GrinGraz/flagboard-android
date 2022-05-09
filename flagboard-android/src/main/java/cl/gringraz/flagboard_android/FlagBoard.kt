@@ -22,7 +22,7 @@ object FlagBoard {
     internal var featureFlags: List<FeatureFlag> = emptyList()
     internal var thisFeatureFlagsMap: MutableMap<String, Any>? = null
 
-    fun init(/*env: Env = Env.LOCAL, */@NonNull featureFlagsMap: Map<String, Any>): FlagBoard {
+    fun init(context: Context,/*env: Env = Env.LOCAL, */@NonNull featureFlagsMap: Map<String, Any>): FlagBoard {
         println("FlagBoard is initializing")
         if (flagBoardState == FlagBoardState.INITIALIZED) {
             println("FlagBoard was already initialized. Previous parameters will be " +
@@ -32,6 +32,7 @@ object FlagBoard {
 //        this.env = env
         thisFeatureFlagsMap = featureFlagsMap.toMutableMap()
         featureFlags = parseToFeatureFlags(featureFlagsMap)
+        loadData(context = context)
         println("FlagBoard is initialized")
         return this
     }
@@ -52,7 +53,7 @@ object FlagBoard {
     fun getFeatureFlag(key: String) = thisFeatureFlagsMap?.get(key)
 
     fun open(@NonNull context: Context) {
-        loadData(context)
+        //loadData(context)
         when (flagBoardState) {
             FlagBoardState.INITIALIZED     -> {
                 FlagBoardActivity.openFlagBoard(context)
