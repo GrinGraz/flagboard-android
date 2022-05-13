@@ -4,10 +4,16 @@
 
     <application>
         <activity
-            android:name=".FlagBoardActivity"
+            android:name=".ui.FlagboardActivity"
             android:exported="false"
             android:label="@string/title_activity_flag_board"
             android:theme="@style/Theme.Flagboard" />
+
+        <provider
+            android:authorities="${applicationId}.FlagboardProvider"
+            android:name=".di.FlagboardProvider"
+            android:exported="false"
+            android:enabled="true"/>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package cl.gringraz.flagboard_android
+package cl.gringraz.flagboard_android.ui
 
 import android.content.Context
 import android.widget.Toast
@@ -23,12 +23,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cl.gringraz.flagboard_android.R
 import cl.gringraz.flagboard_android.data.models.FeatureFlag
 import cl.gringraz.flagboard_android.data.models.Param
+import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import org.json.JSONObject
 
 @Composable
-fun MyTopBar(context: Context) {
+internal fun MyTopBar(context: Context) {
     TopAppBar(
         backgroundColor = Color(com.google.android.material.R.color.design_default_color_primary),
         contentColor = Color.White,
@@ -42,13 +44,12 @@ fun MyTopBar(context: Context) {
 }
 
 @Composable
-fun FlagList() {
+internal fun FlagList(flags: List<FeatureFlag>) {
     val context = LocalContext.current
-    val items = FlagBoard.parseToFeatureFlags(FlagBoard.thisFeatureFlagsMap?.toMap()!!)
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        itemsIndexed(items = items) { index, item ->
+        itemsIndexed(items = flags) { index, item ->
             when (item) {
                 is FeatureFlag.BooleanFlag -> ItemRow(param = item.param)
                 is FeatureFlag.IntFlag     -> ItemRow(param = item.param) {
@@ -68,7 +69,7 @@ fun FlagList() {
                         context, "${item.param.value}", Toast.LENGTH_SHORT).show()
                 }
             }
-            if (index < items.lastIndex) Divider(color = Color.LightGray, thickness = 0.5.dp)
+            if (index < flags.lastIndex) Divider(color = Color.LightGray, thickness = 0.5.dp)
         }
     }
 }
@@ -93,20 +94,18 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
 
 @Composable
 private fun AddSwitch(param: Param<Boolean>) {
-    val pref = LocalContext.current.getSharedPreferences("flagboard", Context.MODE_PRIVATE)
     val checkedState = remember { mutableStateOf(param.value) }
     Switch(checked = checkedState.value, onCheckedChange
     = {
         checkedState.value = it
-        pref.edit().putBoolean(param.key.value, it).apply()
-        FlagBoard.thisFeatureFlagsMap?.set(param.key.value, it)
+        FlagboardInternal.save(param.key.value, it)
     })
 }
 
 @Composable
 private fun AddIcon(param: Param<*>) {
     val icon = when (param.value) {
-        is Boolean    -> R.drawable.ic_number
+        is Boolean    -> R.drawable.ic_boolean
         is String     -> R.drawable.ic_abc
         is Int        -> R.drawable.ic_number
         is JSONObject -> R.drawable.ic_json

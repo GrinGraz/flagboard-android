@@ -4,12 +4,8 @@ import org.json.JSONObject
 
 @JvmInline
 internal value class Key(val value: String)
-internal data class Param<T>(val key: Key, val value: T)
 
-//enum class Env {
-//    REMOTE,
-//    LOCAL,
-//}
+internal data class Param<T>(val key: Key, val value: T)
 
 internal sealed interface FeatureFlag {
     @JvmInline

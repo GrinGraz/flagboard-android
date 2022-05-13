@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -12,8 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import cl.gringraz.flagboard.ui.theme.FlagboardTheme
-import cl.gringraz.flagboard_android.FlagBoard
+import cl.gringraz.flagboard_android.Flagboard
 
 
 class MainActivity : ComponentActivity() {
@@ -21,8 +22,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FlagboardTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                Surface(modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background) {
+                    Dashboard()
                 }
             }
         }
@@ -30,27 +32,39 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
+fun Dashboard() {
     val context = LocalContext.current
+
     val map = mapOf(
-        "Boolean flag" to true,
+        "Boolean flag1" to true,
         "Boolean flag2" to false,
         "Boolean flag3" to true,
-        "String flag" to "hello",
-        "Int flag" to 1,
-        "Json flag" to "{\"key\":\"value\"}")
-    FlagBoard.init(context = context)
-    FlagBoard.loadFlags(featureFlagsMap = map)
+        "String flag1" to "hello",
+        "Int flag1" to 1,
+        "Json flag1" to "{\"key\":\"value\"}")
 
-    Text(text = "Hello $name", modifier = Modifier.clickable {
-        FlagBoard.open(context = context)
-    })
+    Flagboard.loadFlags(map)
+
+    val textModifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+        .clickable {
+            Flagboard.open(context)
+        }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(text = "Click to test feature flag loading", modifier = textModifier)
+
+        Flagboard.getAll().entries.forEach { entry ->
+            Text(text = "${entry.key}: ${entry.value}", modifier = textModifier)
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     FlagboardTheme {
-        Greeting("Android")
+        Dashboard()
     }
 }

@@ -1,4 +1,4 @@
-package cl.gringraz.flagboard_android
+package cl.gringraz.flagboard_android.ui
 
 import android.content.Context
 import android.content.Intent
@@ -7,9 +7,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
 import androidx.core.content.ContextCompat
+import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import cl.gringraz.flagboard_android.ui.theme.FlagboardTheme
 
-internal class FlagBoardActivity : ComponentActivity() {
+internal class FlagboardActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -17,23 +19,17 @@ internal class FlagBoardActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { MyTopBar(context = this) },
                 ) {
-                    FlagList()
+                    FlagList(FlagboardInternal.getFlags())
                 }
             }
         }
     }
 
-    companion object {
+    internal companion object {
         fun openFlagBoard(context: Context?) {
-            if (context != null && FlagBoard.flagBoardState == FlagBoard.FlagBoardState.INITIALIZED) {
-                val intent = Intent(context, FlagBoardActivity::class.java)
+            if (context != null) {
+                val intent = Intent(context, FlagboardActivity::class.java)
                 ContextCompat.startActivity(context, intent, null)
-            } else {
-                println(
-                    "FlagBoard is either not initialized or in a inconsistent state. " +
-                            "Recall FlagBoard.init(@NonNull featureFlagsMap: Map<String, Any>) function"
-                )
-                FlagBoard.flagBoardState = FlagBoard.FlagBoardState.UNKNOWN
             }
         }
     }
