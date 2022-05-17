@@ -41,7 +41,7 @@ object Flagboard {
      * Static function in charge of get a Int feature flag by its key.
      *
      * @param key: string key of the feature flag.
-     * @return Int: value of the feature flag.
+     * @return Int: value of the feature flag. Default value if error.
      */
     @JvmStatic
     fun getInt(key: String): Int = FlagboardInternal.getInt(key)
@@ -50,7 +50,7 @@ object Flagboard {
      * Static function in charge of get a Long feature flag by its key.
      *
      * @param key: string key of the feature flag.
-     * @return Long: value of the feature flag.
+     * @return Long: value of the feature flag. Default value if error.
      */
     @JvmStatic
     fun getLong(key: String): Long = FlagboardInternal.getLong(key)
@@ -59,7 +59,7 @@ object Flagboard {
      * Static function in charge of get a String feature flag by its key.
      *
      * @param key: string key of the feature flag.
-     * @return String: value of the feature flag.
+     * @return String: value of the feature flag. Default value if error.
      */
     @JvmStatic
     fun getString(key: String): String = FlagboardInternal.getString(key)
@@ -68,7 +68,7 @@ object Flagboard {
      * Static function in charge of get a Boolean feature flag by its key.
      *
      * @param key: string key of the feature flag.
-     * @return Boolean: value of the feature flag.
+     * @return Boolean: value of the feature flag, Default value if error.
      */
     @JvmStatic
     fun getBoolean(key: String): Boolean = FlagboardInternal.getBoolean(key)
@@ -76,8 +76,17 @@ object Flagboard {
     /**
      * Static function in charge of get all the feature flags.
      *
-     * @return Map<String, Any>: all the feature flags.
+     * @return Map<String, Any>: all the feature flags or an empty map.
      */
     @JvmStatic
     fun getAll(): Map<String, *> = FlagboardInternal.getRawFlags()
+
+    /**
+     * Static value in charge of exposes the current state.
+     *
+     * @return [FBState]: the current state of Flagboard.
+     * @see: [FBDataState]
+     */
+    @JvmStatic
+    val state: FBState = FlagboardInternal.state
 }

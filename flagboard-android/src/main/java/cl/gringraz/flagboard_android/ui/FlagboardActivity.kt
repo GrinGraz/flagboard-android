@@ -17,7 +17,7 @@ internal class FlagboardActivity : ComponentActivity() {
         setContent {
             FlagboardTheme {
                 Scaffold(
-                    topBar = { MyTopBar(context = this) },
+                    topBar = { AppTopBar(context = this) },
                 ) {
                     FlagList(FlagboardInternal.getFlags())
                 }

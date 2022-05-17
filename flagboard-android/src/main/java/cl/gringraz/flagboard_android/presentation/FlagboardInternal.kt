@@ -1,7 +1,10 @@
 package cl.gringraz.flagboard_android.presentation
 
 import android.content.Context
+import cl.gringraz.flagboard_android.FBDataState
+import cl.gringraz.flagboard_android.FBState
 import cl.gringraz.flagboard_android.data.ConflictStrategy
+import cl.gringraz.flagboard_android.data.models.FBDataError
 import cl.gringraz.flagboard_android.data.Repository
 import cl.gringraz.flagboard_android.data.models.FeatureFlag
 import cl.gringraz.flagboard_android.di.FlagboardContainer
@@ -9,19 +12,9 @@ import cl.gringraz.flagboard_android.ui.FlagboardActivity
 import cl.gringraz.flagboard_android.util.*
 import cl.gringraz.flagboard_android.util.log
 
-object FlagboardInternal {
+internal object FlagboardInternal {
 
-    internal sealed class FBState {
-        internal object Unknown : FBState()
-        internal data class Initialized(val ffLoaded: FBDataState) : FBState()
-    }
-
-    internal enum class FBDataState {
-        FF_LOADED,
-        FF_NOT_LOADED,
-    }
-
-    internal val state: FBState
+    val state: FBState
         get() = _state
     private var _state: FBState = FBState.Unknown
     private lateinit var repository: Repository
@@ -54,20 +47,64 @@ object FlagboardInternal {
     }
 
     internal fun getFlags(): List<FeatureFlag> {
-        val flags = repository.fetchAll()
+        val flags = repository.getAll()
         log("$flagsCountMessage ${flags.size}.")
         return flags
     }
 
+    internal fun getRawFlags(): Map<String, *> = repository.getRawFlags().fold(
+        { error ->
+            logError(error = error, defaultValue = emptyMap<String, Any>())
+        },
+        { value ->
+            value
+        }
+    )
+
+    internal fun getInt(key: String): Int = repository.getInt(key).fold(
+        { error ->
+            logError(key, error, defaultValue = -1)
+        }, { value ->
+            value
+        }
+    )
+
+    internal fun getLong(key: String): Long = repository.getLong(key).fold(
+        { error ->
+            logError(key, error, -1)
+        }, { value ->
+            value
+        }
+    )
+
+    internal fun getString(key: String): String = repository.getString(key).fold(
+        { error ->
+            logError(key, error, "")
+        }, { value ->
+            value
+        }
+    )
+
+    internal fun getBoolean(key: String): Boolean = repository.getBoolean(key).fold(
+        { error ->
+            logError(key, error, false)
+        }, { value ->
+            value
+        }
+    )
+
     internal fun save(key: String, value: Any) = repository.save(key, value)
 
-    internal fun getRawFlags() = repository.getRawFlags()
-
-    internal fun getBoolean(key: String): Boolean = repository.getBoolean(key)
-
-    internal fun getString(key: String): String = repository.getString(key)
-
-    internal fun getLong(key: String): Long = repository.getLong(key)
-
-    internal fun getInt(key: String): Int = repository.getInt(key)
+    private inline fun <reified T> logError(
+        key: String? = null,
+        error: FBDataError,
+        defaultValue: Any,
+    ): T {
+        if (key != null) {
+            log("key $key throws $error. Default value was returned")
+        } else {
+            log("throws $error. Default value was returned")
+        }
+        return defaultValue as T
+    }
 }
