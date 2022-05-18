@@ -14,21 +14,23 @@ import cl.gringraz.flagboard_android.util.log
 
 internal object FlagboardInternal {
 
-    val state: FBState
-        get() = _state
-    private var _state: FBState = FBState.Unknown
+    private var state: FBState = FBState.Unknown
     private lateinit var repository: Repository
     private lateinit var container: FlagboardContainer
+    private val defaultInt by lazy { -1 }
+    private val defaultString by lazy { "" }
+
+    internal fun getState() = state
 
     internal fun init(context: Context) {
         log(initializingStateMessage)
         container = FlagboardContainer(context)
         repository = container.repository
-        _state = FBState.Initialized(FBDataState.FF_NOT_LOADED)
+        state = FBState.Initialized(FBDataState.FF_NOT_LOADED)
         log(initializedStateMessage)
     }
 
-    internal fun open(context: Context) = when (val safeState = _state) {
+    internal fun open(context: Context) = when (val safeState = state) {
         is FBState.Initialized -> {
             if (safeState.ffLoaded == FBDataState.FF_LOADED) {
                 FlagboardActivity.openFlagBoard(context)
@@ -42,7 +44,7 @@ internal object FlagboardInternal {
 
     internal fun loadFlags(featureFlagsMap: Map<String, Any>, conflictStrategy: ConflictStrategy) {
         repository.save(featureFlagsMap, conflictStrategy)
-        _state = FBState.Initialized(FBDataState.FF_LOADED)
+        state = FBState.Initialized(FBDataState.FF_LOADED)
         log("$flagsLoadedAndStrategyMessage ${conflictStrategy.name}.")
     }
 
@@ -63,7 +65,7 @@ internal object FlagboardInternal {
 
     internal fun getInt(key: String): Int = repository.getInt(key).fold(
         { error ->
-            logError(key, error, defaultValue = -1)
+            logError(key, error, defaultInt)
         }, { value ->
             value
         }
@@ -71,7 +73,7 @@ internal object FlagboardInternal {
 
     internal fun getLong(key: String): Long = repository.getLong(key).fold(
         { error ->
-            logError(key, error, -1)
+            logError(key, error, defaultInt.toLong())
         }, { value ->
             value
         }
@@ -79,7 +81,7 @@ internal object FlagboardInternal {
 
     internal fun getString(key: String): String = repository.getString(key).fold(
         { error ->
-            logError(key, error, "")
+            logError(key, error, defaultString)
         }, { value ->
             value
         }
@@ -94,6 +96,11 @@ internal object FlagboardInternal {
     )
 
     internal fun save(key: String, value: Any) = repository.save(key, value)
+
+    internal fun reset() {
+        repository.clear()
+        state = FBState.Initialized(FBDataState.FF_NOT_LOADED)
+    }
 
     private inline fun <reified T> logError(
         key: String? = null,

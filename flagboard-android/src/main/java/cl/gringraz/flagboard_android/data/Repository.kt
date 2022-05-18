@@ -25,17 +25,21 @@ internal class Repository(private val localDataSource: DataSource) {
         }
     }
 
-    internal fun getAll(): List<FeatureFlag> = parseToFeatureFlags(localDataSource.getAll().getSuccessOrNull()) ?: emptyList()
+    internal fun getAll(): List<FeatureFlag> =
+        parseToFeatureFlags(localDataSource.getAll().getSuccessOrNull()) ?: emptyList()
 
     internal fun getRawFlags(): Either<FBDataError, Map<String, *>> = localDataSource.getAll()
 
     internal fun getInt(key: String): Either<FBDataError, Int> = localDataSource.getIntResult(key)
 
-    internal fun getLong(key: String): Either<FBDataError, Long> = localDataSource.getLongResult(key)
+    internal fun getLong(key: String): Either<FBDataError, Long> =
+        localDataSource.getLongResult(key)
 
-    internal fun getString(key: String): Either<FBDataError, String> = localDataSource.getStringResult(key)
+    internal fun getString(key: String): Either<FBDataError, String> =
+        localDataSource.getStringResult(key)
 
-    internal fun getBoolean(key: String): Either<FBDataError, Boolean> = localDataSource.getBooleanResult(key)
+    internal fun getBoolean(key: String): Either<FBDataError, Boolean> =
+        localDataSource.getBooleanResult(key)
 
     private fun parseToFeatureFlags(featureFlagsMap: Map<String, *>?): List<FeatureFlag>? =
         featureFlagsMap?.map { entry ->
@@ -67,4 +71,6 @@ internal class Repository(private val localDataSource: DataSource) {
     }
 
     fun save(key: String, value: Any) = localDataSource.save(key, value)
+
+    fun clear() = localDataSource.clear()
 }

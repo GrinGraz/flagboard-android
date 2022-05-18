@@ -23,7 +23,7 @@ object Flagboard {
     @JvmOverloads
     fun loadFlags(
         @NonNull featureFlagsMap: Map<String, Any>,
-        conflictStrategy: ConflictStrategy = ConflictStrategy.Keep,
+        @NonNull conflictStrategy: ConflictStrategy = ConflictStrategy.Keep,
     ): Flagboard {
         FlagboardInternal.loadFlags(featureFlagsMap, conflictStrategy)
         return this
@@ -44,7 +44,7 @@ object Flagboard {
      * @return Int: value of the feature flag. Default value if error.
      */
     @JvmStatic
-    fun getInt(key: String): Int = FlagboardInternal.getInt(key)
+    fun getInt(@NonNull key: String): Int = FlagboardInternal.getInt(key)
 
     /**
      * Static function in charge of get a Long feature flag by its key.
@@ -53,7 +53,7 @@ object Flagboard {
      * @return Long: value of the feature flag. Default value if error.
      */
     @JvmStatic
-    fun getLong(key: String): Long = FlagboardInternal.getLong(key)
+    fun getLong(@NonNull key: String): Long = FlagboardInternal.getLong(key)
 
     /**
      * Static function in charge of get a String feature flag by its key.
@@ -62,7 +62,7 @@ object Flagboard {
      * @return String: value of the feature flag. Default value if error.
      */
     @JvmStatic
-    fun getString(key: String): String = FlagboardInternal.getString(key)
+    fun getString(@NonNull key: String): String = FlagboardInternal.getString(key)
 
     /**
      * Static function in charge of get a Boolean feature flag by its key.
@@ -71,7 +71,7 @@ object Flagboard {
      * @return Boolean: value of the feature flag, Default value if error.
      */
     @JvmStatic
-    fun getBoolean(key: String): Boolean = FlagboardInternal.getBoolean(key)
+    fun getBoolean(@NonNull key: String): Boolean = FlagboardInternal.getBoolean(key)
 
     /**
      * Static function in charge of get all the feature flags.
@@ -88,5 +88,11 @@ object Flagboard {
      * @see: [FBDataState]
      */
     @JvmStatic
-    val state: FBState = FlagboardInternal.state
+    fun getState(): FBState = FlagboardInternal.getState()
+
+    /**
+     * Static function in charge of clear all the feature flags and reset state.
+     */
+    @JvmStatic
+    fun reset() = FlagboardInternal.reset()
 }
