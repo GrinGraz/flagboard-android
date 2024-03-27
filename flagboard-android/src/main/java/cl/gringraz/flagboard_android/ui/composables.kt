@@ -32,7 +32,7 @@ import org.json.JSONObject
 @Composable
 internal fun AppTopBar(context: Context) {
     TopAppBar(
-        backgroundColor = Color(com.google.android.material.R.color.design_default_color_primary),
+        backgroundColor = Color.Black,
         contentColor = Color.White,
         title = { Text(text = "Flagboard") },
         navigationIcon = {

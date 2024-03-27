@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
-        minSdk 26
-        targetSdk 32
+        minSdk 23
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -74,7 +74,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.GrinGraz'
                 artifactId = 'flagboard-android'
-                version = '0.0.1'
+                version = '1.0.0'
             }
         }
     }
