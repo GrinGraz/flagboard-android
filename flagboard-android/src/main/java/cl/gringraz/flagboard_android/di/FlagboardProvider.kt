@@ -8,7 +8,7 @@ import cl.gringraz.flagboard_android.util.log
 import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import cl.gringraz.flagboard_android.util.failedInitializationMessage
 
-internal class FlagboardProvider: ContentProvider() {
+internal class FlagboardProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         if (context != null) {

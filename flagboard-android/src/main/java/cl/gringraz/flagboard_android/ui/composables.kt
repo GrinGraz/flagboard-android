@@ -30,9 +30,9 @@ import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import org.json.JSONObject
 
 @Composable
-internal fun MyTopBar(context: Context) {
+internal fun AppTopBar(context: Context) {
     TopAppBar(
-        backgroundColor = Color(com.google.android.material.R.color.design_default_color_primary),
+        backgroundColor = Color.Black,
         contentColor = Color.White,
         title = { Text(text = "Flagboard") },
         navigationIcon = {
@@ -52,22 +52,18 @@ internal fun FlagList(flags: List<FeatureFlag>) {
         itemsIndexed(items = flags) { index, item ->
             when (item) {
                 is FeatureFlag.BooleanFlag -> ItemRow(param = item.param)
-                is FeatureFlag.IntFlag     -> ItemRow(param = item.param) {
-                    Toast.makeText(
-                        context, "${item.param.value}", Toast.LENGTH_SHORT).show()
-                }
-                is FeatureFlag.JsonFlag    -> ItemRow(param = item.param) {
-                    Toast.makeText(
-                        context, "${item.param.value}", Toast.LENGTH_SHORT).show()
-                }
-                is FeatureFlag.StringFlag  -> ItemRow(param = item.param) {
-                    Toast.makeText(
-                        context, item.param.value, Toast.LENGTH_SHORT).show()
-                }
-                is FeatureFlag.UnknownFlag -> ItemRow(param = item.param) {
-                    Toast.makeText(
-                        context, "${item.param.value}", Toast.LENGTH_SHORT).show()
-                }
+                is FeatureFlag.IntFlag     -> ItemRow(param = item.param, onRowClick = {
+                    context.showToast(item.param.value.toString())
+                })
+                is FeatureFlag.JsonFlag    -> ItemRow(param = item.param, onRowClick = {
+                    context.showToast(item.param.value.toString())
+                })
+                is FeatureFlag.StringFlag  -> ItemRow(param = item.param, onRowClick = {
+                    context.showToast(item.param.value)
+                })
+                is FeatureFlag.UnknownFlag -> ItemRow(param = item.param, onRowClick = {
+                    context.showToast(item.param.value.toString())
+                })
             }
             if (index < flags.lastIndex) Divider(color = Color.LightGray, thickness = 0.5.dp)
         }
@@ -81,6 +77,7 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
         .fillMaxWidth()
         .clickable(onClick = onRowClick)
         .padding(PaddingValues(vertical = 12.dp))
+
     Row(modifier = rowModifier, verticalAlignment = Alignment.CenterVertically) {
         AddIcon(param = param)
         Text(text = param.key.value, fontSize = 16.sp, modifier = Modifier
@@ -111,6 +108,9 @@ private fun AddIcon(param: Param<*>) {
         is JSONObject -> R.drawable.ic_json
         else          -> R.drawable.ic_number
     }
-
     Icon(painter = painterResource(id = icon), contentDescription = null)
+}
+
+private fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }

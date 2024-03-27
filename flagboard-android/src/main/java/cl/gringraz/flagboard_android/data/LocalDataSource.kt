@@ -1,49 +1,82 @@
 package cl.gringraz.flagboard_android.data
 
 import android.content.SharedPreferences
+import cl.gringraz.flagboard_android.data.models.FBDataError
+import cl.gringraz.flagboard_android.util.Either
 import cl.gringraz.flagboard_android.util.log
+import cl.gringraz.flagboard_android.util.tryToSafeUnsupportedTypeMsg
+import java.lang.NullPointerException
 
 internal interface DataSource {
     fun save(ffs: Map<String, Any>)
-    fun fetchAll(): MutableMap<String, *>
-    fun getBoolean(key: String): Boolean
-    fun getString(key: String): String
-    fun getLong(key: String): Long
-    fun getInt(key: String): Int
     fun save(key: String, value: Any)
+    fun getAll(): Either<FBDataError, MutableMap<String, *>>
+    fun getIntResult(key: String): Either<FBDataError, Int>
+    fun getLongResult(key: String): Either<FBDataError, Long>
+    fun getStringResult(key: String): Either<FBDataError, String>
+    fun getBooleanResult(key: String): Either<FBDataError, Boolean>
+    fun clear()
 }
 
 internal class LocalDataSource(private val sharedPreferences: SharedPreferences) : DataSource {
     private val editor: SharedPreferences.Editor = sharedPreferences.edit()
+    private val defaultInt by lazy { -1 }
+    private val defaultString by lazy { "" }
 
     override fun save(ffs: Map<String, Any>) {
         ffs.entries.forEach { entry ->
             when (entry.value) {
-                is Boolean -> editor.putBoolean(entry.key, entry.value as Boolean)
                 is Int     -> editor.putInt(entry.key, entry.value as Int)
                 is Long    -> editor.putLong(entry.key, entry.value as Long)
                 is String  -> editor.putString(entry.key, entry.value as String)
-                else       -> log("Unsupported data type")
+                is Boolean -> editor.putBoolean(entry.key, entry.value as Boolean)
+                else       -> log("$tryToSafeUnsupportedTypeMsg ${entry.value.javaClass}")
             }
         }
         editor.apply()
     }
 
     override fun save(key: String, value: Any) = when (value) {
-        is Boolean -> { editor.putBoolean(key, value).apply() }
-        is String  -> { editor.putString(key, value).apply() }
-        is Int     -> { editor.putInt(key, value).apply() }
-        is Long    -> { editor.putLong(key, value).apply() }
-        else       -> { log("Unsupported type") }
+        is Int     -> editor.putInt(key, value).apply()
+        is Long    -> editor.putLong(key, value).apply()
+        is String  -> editor.putString(key, value).apply()
+        is Boolean -> editor.putBoolean(key, value).apply()
+        else       -> log("$tryToSafeUnsupportedTypeMsg ${value.javaClass}")
     }
 
-    override fun fetchAll(): MutableMap<String, *> = sharedPreferences.all
+    override fun getAll(): Either<FBDataError, MutableMap<String, *>> = try {
+        Either.Success(sharedPreferences.all)
+    } catch (_: NullPointerException) {
+        Either.Error(FBDataError.NoDataError)
+    }
 
-    override fun getBoolean(key: String): Boolean = sharedPreferences.getBoolean(key, false)
+    override fun getIntResult(key: String): Either<FBDataError, Int> =
+        safeGetValue(key) { sharedPreferences.getInt(key, defaultInt) }
 
-    override fun getString(key: String): String = sharedPreferences.getString(key, "")!!
+    override fun getLongResult(key: String): Either<FBDataError, Long> =
+        safeGetValue(key) { sharedPreferences.getLong(key, defaultInt.toLong()) }
 
-    override fun getLong(key: String): Long = sharedPreferences.getLong(key, -1)
+    override fun getStringResult(key: String): Either<FBDataError, String> =
+        safeGetValue(key) { sharedPreferences.getString(key, defaultString) ?: defaultString }
 
-    override fun getInt(key: String): Int = sharedPreferences.getInt(key, -1)
+    override fun getBooleanResult(key: String): Either<FBDataError, Boolean> =
+        safeGetValue(key) { sharedPreferences.getBoolean(key, false) }
+
+    override fun clear() = editor.clear().apply()
+
+    private inline fun <T> safeGetValue(key: String, block: () -> T): Either<FBDataError, T> {
+        return if (sharedPreferences.contains(key)) {
+            tryGetValue(block)
+        } else {
+            Either.Error(FBDataError.KeyNotExistError)
+        }
+    }
+
+    private inline fun <T> tryGetValue(block: () -> T): Either<FBDataError, T> {
+        return try {
+            Either.Success(block())
+        } catch (_: ClassCastException) {
+            Either.Error(FBDataError.WrongTypeError)
+        }
+    }
 }

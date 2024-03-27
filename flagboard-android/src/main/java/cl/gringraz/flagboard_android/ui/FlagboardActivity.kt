@@ -17,7 +17,7 @@ internal class FlagboardActivity : ComponentActivity() {
         setContent {
             FlagboardTheme {
                 Scaffold(
-                    topBar = { MyTopBar(context = this) },
+                    topBar = { AppTopBar(context = this) },
                 ) {
                     FlagList(FlagboardInternal.getFlags())
                 }
@@ -29,6 +29,7 @@ internal class FlagboardActivity : ComponentActivity() {
         fun openFlagBoard(context: Context?) {
             if (context != null) {
                 val intent = Intent(context, FlagboardActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 ContextCompat.startActivity(context, intent, null)
             }
         }
