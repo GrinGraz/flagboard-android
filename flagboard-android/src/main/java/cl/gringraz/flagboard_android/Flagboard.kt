@@ -4,11 +4,27 @@ import android.content.Context
 import androidx.annotation.NonNull
 import cl.gringraz.flagboard_android.data.ConflictStrategy
 import cl.gringraz.flagboard_android.presentation.FlagboardInternal
+import kotlin.contracts.CallsInPlace
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 /**
  * Public Object that interact with the Flagboard internal API through [FlagboardInternal].
  */
 object Flagboard {
+
+    /**
+     * Static function in charge of init Flagboard.
+     *
+     * @param context: context to initialize Flagboard .
+     *
+     * @see [ConflictStrategy]
+     */
+    @JvmStatic
+    fun init(@NonNull context: Context): Flagboard {
+        FlagboardInternal.init(context = context)
+        return this
+    }
 
     /**
      * Static function in charge of load the feature flags in Flagboard to persist them.

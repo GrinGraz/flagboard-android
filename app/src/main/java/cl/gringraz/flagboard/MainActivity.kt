@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Dashboard() {
     val context = LocalContext.current
+    Flagboard.init(context)
 
     val map = mapOf(
         "Boolean flag1" to true,

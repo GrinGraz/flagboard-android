@@ -43,9 +43,14 @@ internal object FlagboardInternal {
 
 
     internal fun loadFlags(featureFlagsMap: Map<String, Any>, conflictStrategy: ConflictStrategy) {
-        repository.save(featureFlagsMap, conflictStrategy)
-        state = FBState.Initialized(FBDataState.FF_LOADED)
-        log("$flagsLoadedAndStrategyMessage ${conflictStrategy.name}.")
+        when (state) {
+            is FBState.Initialized -> {
+                repository.save(featureFlagsMap, conflictStrategy)
+                state = FBState.Initialized(FBDataState.FF_LOADED)
+                log("$flagsLoadedAndStrategyMessage ${conflictStrategy.name}.")
+            }
+            is FBState.Unknown -> log(unknownStateMessage)
+        }
     }
 
     internal fun getFlags(): List<FeatureFlag> {
