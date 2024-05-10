@@ -5,6 +5,7 @@ import cl.gringraz.flagboard_android.data.models.FeatureFlag
 import cl.gringraz.flagboard_android.data.models.Key
 import cl.gringraz.flagboard_android.data.models.Param
 import cl.gringraz.flagboard_android.util.Either
+import org.json.JSONArray
 import org.json.JSONObject
 
 enum class ConflictStrategy {
@@ -56,6 +57,9 @@ internal class Repository(private val localDataSource: DataSource) {
             }
         }
 
+    private val error = "error"
+    private val message = "Malformed json string"
+
     private fun getStringType(param: Param<String>): FeatureFlag = when {
         param.value.contains("{") -> FeatureFlag.JsonFlag(
             param = Param(
@@ -63,7 +67,12 @@ internal class Repository(private val localDataSource: DataSource) {
                 value = try {
                     JSONObject(param.value)
                 } catch (e: Exception) {
-                    JSONObject("")
+                    try {
+                        JSONArray(param.value)
+                    } catch (e: Exception) {
+                        JSONObject("{\"$error\": \"$param is a $message}\"")
+                    }
+                    JSONObject("{\"$error\": \"$param is a $message}\"")
                 }
             )
         )
