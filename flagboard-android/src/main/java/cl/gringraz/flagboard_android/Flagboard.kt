@@ -4,9 +4,6 @@ import android.content.Context
 import androidx.annotation.NonNull
 import cl.gringraz.flagboard_android.data.ConflictStrategy
 import cl.gringraz.flagboard_android.presentation.FlagboardInternal
-import kotlin.contracts.CallsInPlace
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 /**
  * Public Object that interact with the Flagboard internal API through [FlagboardInternal].
@@ -88,6 +85,15 @@ object Flagboard {
      */
     @JvmStatic
     fun getBoolean(@NonNull key: String): Boolean = FlagboardInternal.getBoolean(key)
+
+    /**
+     * Static function in charge of get a Double feature flag by its key.
+     *
+     * @param key: string key of the feature flag.
+     * @return Double: value of the feature flag, Default value if error.
+     */
+    @JvmStatic
+    fun getDouble(@NonNull key: String): Double = FlagboardInternal.getDouble(key)
 
     /**
      * Static function in charge of get all the feature flags.

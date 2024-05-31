@@ -42,6 +42,9 @@ internal class Repository(private val localDataSource: DataSource) {
     internal fun getBoolean(key: String): Either<FBDataError, Boolean> =
         localDataSource.getBooleanResult(key)
 
+    internal fun getDouble(key: String): Either<FBDataError, Double> =
+        localDataSource.getDoubleResult(key)
+
     private fun parseToFeatureFlags(featureFlagsMap: Map<String, *>?): List<FeatureFlag>? =
         featureFlagsMap?.map { entry ->
             when (val value = entry.value) {

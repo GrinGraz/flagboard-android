@@ -100,6 +100,14 @@ internal object FlagboardInternal {
         }
     )
 
+    internal fun getDouble(key: String): Double = repository.getDouble(key).fold(
+        { error ->
+            logError(key, error, false)
+        }, { value ->
+            value
+        }
+    )
+
     internal fun save(key: String, value: Any) = repository.save(key, value)
 
     internal fun reset() {
