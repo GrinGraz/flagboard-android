@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import cl.gringraz.flagboard_android.data.models.FBDataError
 import cl.gringraz.flagboard_android.util.Either
 import cl.gringraz.flagboard_android.util.log
-import cl.gringraz.flagboard_android.util.tryToSafeUnsupportedTypeMsg
+import cl.gringraz.flagboard_android.util.tryToSaveUnsupportedTypeMsg
 import java.lang.NullPointerException
 
 internal interface DataSource {
@@ -32,7 +32,7 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
                 is Double  -> editor.putFloat(entry.key, entry.value as Float)
                 is String  -> editor.putString(entry.key, entry.value as String)
                 is Boolean -> editor.putBoolean(entry.key, entry.value as Boolean)
-                else       -> log("$tryToSafeUnsupportedTypeMsg ${entry.value.javaClass} for key: ${entry.key}")
+                else       -> log("$tryToSaveUnsupportedTypeMsg ${entry.value.javaClass} for key: ${entry.key}")
             }
         }
         editor.apply()
@@ -44,7 +44,7 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
         is Double  -> editor.putFloat(key, value.toFloat()).apply()
         is String  -> editor.putString(key, value).apply()
         is Boolean -> editor.putBoolean(key, value).apply()
-        else       -> log("$tryToSafeUnsupportedTypeMsg ${value.javaClass} for key: $key")
+        else       -> log("$tryToSaveUnsupportedTypeMsg ${value.javaClass} for key: $key")
     }
 
     override fun getAll(): Either<FBDataError, MutableMap<String, *>> = try {
