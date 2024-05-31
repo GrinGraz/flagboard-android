@@ -15,6 +15,7 @@ internal interface DataSource {
     fun getLongResult(key: String): Either<FBDataError, Long>
     fun getStringResult(key: String): Either<FBDataError, String>
     fun getBooleanResult(key: String): Either<FBDataError, Boolean>
+    fun getDoubleResult(key: String): Either<FBDataError, Double>
     fun clear()
 }
 
@@ -28,9 +29,10 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
             when (entry.value) {
                 is Int     -> editor.putInt(entry.key, entry.value as Int)
                 is Long    -> editor.putLong(entry.key, entry.value as Long)
+                is Double  -> editor.putFloat(entry.key, entry.value as Float)
                 is String  -> editor.putString(entry.key, entry.value as String)
                 is Boolean -> editor.putBoolean(entry.key, entry.value as Boolean)
-                else       -> log("$tryToSafeUnsupportedTypeMsg ${entry.value.javaClass}")
+                else       -> log("$tryToSafeUnsupportedTypeMsg ${entry.value.javaClass} for key: ${entry.key}")
             }
         }
         editor.apply()
@@ -39,9 +41,10 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
     override fun save(key: String, value: Any) = when (value) {
         is Int     -> editor.putInt(key, value).apply()
         is Long    -> editor.putLong(key, value).apply()
+        is Double  -> editor.putFloat(key, value.toFloat()).apply()
         is String  -> editor.putString(key, value).apply()
         is Boolean -> editor.putBoolean(key, value).apply()
-        else       -> log("$tryToSafeUnsupportedTypeMsg ${value.javaClass}")
+        else       -> log("$tryToSafeUnsupportedTypeMsg ${value.javaClass} for key: $key")
     }
 
     override fun getAll(): Either<FBDataError, MutableMap<String, *>> = try {
@@ -61,6 +64,9 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
 
     override fun getBooleanResult(key: String): Either<FBDataError, Boolean> =
         safeGetValue(key) { sharedPreferences.getBoolean(key, false) }
+
+    override fun getDoubleResult(key: String): Either<FBDataError, Double> =
+        safeGetValue(key) { sharedPreferences.getFloat(key, 0f).toDouble() }
 
     override fun clear() = editor.clear().apply()
 
