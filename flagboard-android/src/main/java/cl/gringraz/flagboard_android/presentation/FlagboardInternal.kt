@@ -102,7 +102,7 @@ internal object FlagboardInternal {
 
     internal fun getDouble(key: String): Double = repository.getDouble(key).fold(
         { error ->
-            logError(key, error, false)
+            logError(key, error, -1.0)
         }, { value ->
             value
         }

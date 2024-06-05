@@ -12,7 +12,7 @@ internal sealed interface FeatureFlag {
     value class IntFlag(val param: Param<Int>) : FeatureFlag
 
     @JvmInline
-    value class JsonFlag(val param: Param<JSONObject>) : FeatureFlag
+    value class JsonFlag(val param: Param<Any>) : FeatureFlag
 
     @JvmInline
     value class StringFlag(val param: Param<String>) : FeatureFlag
