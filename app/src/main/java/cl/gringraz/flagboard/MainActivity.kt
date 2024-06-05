@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cl.gringraz.flagboard.ui.theme.FlagboardTheme
 import cl.gringraz.flagboard_android.Flagboard
+import cl.gringraz.flagboard_android.data.ConflictStrategy
 
 
 class MainActivity : ComponentActivity() {
@@ -42,9 +43,12 @@ fun Dashboard() {
         "Boolean flag3" to true,
         "String flag1" to "hello",
         "Int flag1" to 1,
-        "Json flag1" to "{\"key\":\"value\"}")
+        "Json flag1" to "{\"key\":\"value\"}",
+        "Json flag2" to "[{\"key\":\"value\"}]",
+        "Json flag3" to "{\"key\"\"value\"}"
+    )
 
-    Flagboard.loadFlags(map)
+    Flagboard.loadFlags(map, ConflictStrategy.Replace)
 
     val textModifier = Modifier
         .fillMaxWidth()
