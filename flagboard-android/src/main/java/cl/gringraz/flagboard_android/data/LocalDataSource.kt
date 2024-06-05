@@ -29,7 +29,7 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
             when (entry.value) {
                 is Int     -> editor.putInt(entry.key, entry.value as Int)
                 is Long    -> editor.putLong(entry.key, entry.value as Long)
-                is Double  -> editor.putFloat(entry.key, entry.value as Float)
+                is Double  -> editor.putFloat(entry.key, (entry.value as Double).toFloat())
                 is String  -> editor.putString(entry.key, entry.value as String)
                 is Boolean -> editor.putBoolean(entry.key, entry.value as Boolean)
                 else       -> log("$tryToSaveUnsupportedTypeMsg ${entry.value.javaClass} for key: ${entry.key}")
