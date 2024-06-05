@@ -3,6 +3,7 @@ package cl.gringraz.flagboard_android
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -24,6 +25,7 @@ class FlagboardInstrumentedTest {
     private val intFlagMap = mapOf("one key" to 1, "two key" to 2)
     private val longFlagMap = mapOf("one key" to 1L, "two key" to 2L)
     private val jsonFlagMap = mapOf("json key" to "{\"key\":\"value\"}")
+    private val jsonArrayFlagMap = mapOf("json key" to "[{\"key\":\"value\"}]")
     private val doubleFlagMap = mapOf("one key" to 1.0, "two key" to 2.0)
 
     @Before
@@ -117,6 +119,16 @@ class FlagboardInstrumentedTest {
     @Test
     fun getFlagboardWrongJsonKeyFlagShouldReturnEmptyString() {
         assertEquals("", Flagboard.loadFlags(jsonFlagMap).getString(wrongKey))
+    }
+
+    @Test
+    fun getFlagboardJsonArrayFlagShouldReturnJsonArray() {
+        assertEquals("[{\"key\":\"value\"}]", Flagboard.loadFlags(jsonArrayFlagMap).getString("json key"))
+    }
+
+    @Test
+    fun getFlagboardWrongJsonArrayKeyFlagShouldReturnEmptyString() {
+        assertEquals("", Flagboard.loadFlags(jsonArrayFlagMap).getString(wrongKey))
     }
 
     @Test
