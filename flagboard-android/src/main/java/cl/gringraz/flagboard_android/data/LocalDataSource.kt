@@ -27,9 +27,7 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
     override fun save(ffs: Map<String, Any>) {
         ffs.entries.forEach { entry ->
             when (entry.value) {
-                is Int     -> editor.putInt(entry.key, entry.value as Int)
-                is Long    -> editor.putLong(entry.key, entry.value as Long)
-                is Double  -> editor.putFloat(entry.key, (entry.value as Double).toFloat())
+                is Number  -> editor.putFloat(entry.key, (entry.value as Number).toFloat())
                 is String  -> editor.putString(entry.key, entry.value as String)
                 is Boolean -> editor.putBoolean(entry.key, entry.value as Boolean)
                 else       -> log("$tryToSaveUnsupportedTypeMsg ${entry.value.javaClass} for key: ${entry.key}")
@@ -39,9 +37,7 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
     }
 
     override fun save(key: String, value: Any) = when (value) {
-        is Int     -> editor.putInt(key, value).apply()
-        is Long    -> editor.putLong(key, value).apply()
-        is Double  -> editor.putFloat(key, value.toFloat()).apply()
+        is Number  -> editor.putFloat(key, value.toFloat()).apply()
         is String  -> editor.putString(key, value).apply()
         is Boolean -> editor.putBoolean(key, value).apply()
         else       -> log("$tryToSaveUnsupportedTypeMsg ${value.javaClass} for key: $key")

@@ -52,7 +52,7 @@ internal fun FlagList(flags: List<FeatureFlag>) {
         itemsIndexed(items = flags) { index, item ->
             when (item) {
                 is FeatureFlag.BooleanFlag -> ItemRow(param = item.param)
-                is FeatureFlag.IntFlag     -> ItemRow(param = item.param, onRowClick = {
+                is FeatureFlag.NumberFlag  -> ItemRow(param = item.param, onRowClick = {
                     context.showToast(item.param.value.toString())
                 })
                 is FeatureFlag.JsonFlag    -> ItemRow(param = item.param, onRowClick = {
