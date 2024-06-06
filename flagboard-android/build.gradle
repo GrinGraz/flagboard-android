@@ -74,7 +74,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.GrinGraz'
                 artifactId = 'flagboard-android'
-                version = '1.0.3'
+                version = '1.0.5'
             }
         }
     }
