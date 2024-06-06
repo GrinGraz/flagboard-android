@@ -49,12 +49,12 @@ internal class Repository(private val localDataSource: DataSource) {
     private fun parseToFeatureFlags(featureFlagsMap: Map<String, *>?): List<FeatureFlag>? =
         featureFlagsMap?.map { entry ->
             when (val value = entry.value) {
-                is Int     ->
-                    FeatureFlag.IntFlag(Param(key = Key(value = entry.key), value = value))
                 is String  ->
                     getStringType(Param(key = Key(value = entry.key), value = value))
                 is Boolean ->
                     FeatureFlag.BooleanFlag(Param(key = Key(value = entry.key), value = value))
+                is Number  ->
+                    FeatureFlag.NumberFlag(Param(key = Key(value = entry.key), value = value))
                 else       ->
                     FeatureFlag.UnknownFlag(Param(key = Key(value = entry.key),
                         value = entry.value!!::class.java))

@@ -43,6 +43,8 @@ fun Dashboard() {
         "Boolean flag3" to true,
         "String flag1" to "hello",
         "Int flag1" to 1,
+        "Float flag1" to 1.5F,
+        "Double flag1" to 5.0,
         "Json flag1" to "{\"key\":\"value\"}",
         "Json flag2" to "[{\"key\":\"value\"}]",
         "Json flag3" to "{\"key\"\"value\"}"
