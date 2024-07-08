@@ -44,7 +44,7 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
     }
 
     override fun getAll(): Either<FBDataError, MutableMap<String, *>> = try {
-        Either.Success(sharedPreferences.all)
+        Either.Success(sharedPreferences.all.toSortedMap())
     } catch (_: NullPointerException) {
         Either.Error(FBDataError.NoDataError)
     }

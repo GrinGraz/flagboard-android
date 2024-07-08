@@ -22,6 +22,7 @@ internal class Repository(private val localDataSource: DataSource) {
                 if (getAll().isEmpty()) localDataSource.save(featureFlag)
             }
             ConflictStrategy.Replace -> {
+                localDataSource.clear()
                 localDataSource.save(featureFlag)
             }
         }
