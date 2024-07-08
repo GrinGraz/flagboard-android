@@ -8,19 +8,33 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cl.gringraz.flagboard_android.R
@@ -28,6 +42,7 @@ import cl.gringraz.flagboard_android.data.models.FeatureFlag
 import cl.gringraz.flagboard_android.data.models.Param
 import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import org.json.JSONObject
+import java.util.Locale
 
 @Composable
 internal fun AppTopBar(context: Context) {
@@ -44,12 +59,39 @@ internal fun AppTopBar(context: Context) {
 }
 
 @Composable
-internal fun FlagList(flags: List<FeatureFlag>) {
+internal fun FlagList(flags: List<FeatureFlag>, textState: MutableState<TextFieldValue>) {
     val context = LocalContext.current
+    var filteredList: MutableList<FeatureFlag>
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        itemsIndexed(items = flags) { index, item ->
+        val searchedText = textState.value.text
+        filteredList = if (searchedText.isEmpty()) {
+            flags.toMutableList()
+        } else {
+            val resultList = mutableListOf<FeatureFlag>()
+            for (flag in flags) {
+                when (flag) {
+                    is FeatureFlag.BooleanFlag -> {
+                        if (filter(flag.param.key.value, searchedText)) resultList.add(flag)
+                    }
+                    is FeatureFlag.NumberFlag  -> {
+                        if (filter(flag.param.key.value, searchedText)) resultList.add(flag)
+                    }
+                    is FeatureFlag.JsonFlag    -> {
+                        if (filter(flag.param.key.value, searchedText)) resultList.add(flag)
+                    }
+                    is FeatureFlag.StringFlag  -> {
+                        if (filter(flag.param.key.value, searchedText)) resultList.add(flag)
+                    }
+                    is FeatureFlag.UnknownFlag -> {
+                        if (filter(flag.param.key.value, searchedText)) resultList.add(flag)
+                    }
+                }
+            }
+            resultList
+        }
+        itemsIndexed(items = filteredList) { index, item ->
             when (item) {
                 is FeatureFlag.BooleanFlag -> ItemRow(param = item.param)
                 is FeatureFlag.NumberFlag  -> ItemRow(param = item.param, onRowClick = {
@@ -70,6 +112,10 @@ internal fun FlagList(flags: List<FeatureFlag>) {
     }
 }
 
+fun filter(flagName: String, term: String): Boolean {
+    return flagName.lowercase(Locale.getDefault()).contains(term.lowercase(Locale.getDefault()))
+}
+
 @Suppress("UNCHECKED_CAST")
 @Composable
 internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick: () -> Unit = {}) {
@@ -87,6 +133,60 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
             AddSwitch(param = param as Param<Boolean>)
         }
     }
+}
+
+
+
+@Composable
+fun SearchView(state: MutableState<TextFieldValue>) {
+    TextField(
+        value = state.value,
+        onValueChange = { value ->
+            state.value = value
+        },
+        modifier = Modifier
+            .fillMaxWidth(),
+        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
+        leadingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(15.dp)
+                    .size(24.dp)
+            )
+        },
+        trailingIcon = {
+            if (state.value != TextFieldValue("")) {
+                IconButton(
+                    onClick = {
+                        state.value =
+                            TextFieldValue("") // Remove text from TextField when you press the 'X' icon
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RectangleShape, // The TextFiled has rounded corners top left and right by default
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.White,
+            cursorColor = Color.White,
+            leadingIconColor = Color.White,
+            trailingIconColor = Color.White,
+            backgroundColor = Color.DarkGray,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    )
 }
 
 @Composable
