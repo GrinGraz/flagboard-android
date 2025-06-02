@@ -7,17 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import cl.gringraz.flagboard_android.ui.theme.FlagboardTheme
 
 internal class FlagboardActivity : ComponentActivity() {
@@ -35,7 +31,7 @@ internal class FlagboardActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(it)) {
                         Column {
                             SearchView(textState)
-                            FlagList(FlagboardInternal.getFlags(), textState)
+                            FlagList(textState)
                         }
                     }
                 }

@@ -59,7 +59,7 @@ internal fun AppTopBar(context: Context) {
 }
 
 @Composable
-internal fun FlagList(flags: List<FeatureFlag>, textState: MutableState<TextFieldValue>) {
+internal fun FlagList(textState: MutableState<TextFieldValue>) {
     val context = LocalContext.current
     var filteredList: MutableList<FeatureFlag>
     LazyColumn(
@@ -67,9 +67,10 @@ internal fun FlagList(flags: List<FeatureFlag>, textState: MutableState<TextFiel
     ) {
         val searchedText = textState.value.text
         filteredList = if (searchedText.isEmpty()) {
-            flags.toMutableList()
+            FlagboardInternal.getFlags().toMutableList()
         } else {
             val resultList = mutableListOf<FeatureFlag>()
+            val flags = FlagboardInternal.getFlags().toMutableList()
             for (flag in flags) {
                 when (flag) {
                     is FeatureFlag.BooleanFlag -> {
@@ -107,7 +108,7 @@ internal fun FlagList(flags: List<FeatureFlag>, textState: MutableState<TextFiel
                     context.showToast(item.param.value.toString())
                 })
             }
-            if (index < flags.lastIndex) Divider(color = Color.LightGray, thickness = 0.5.dp)
+            if (index < filteredList.lastIndex) Divider(color = Color.LightGray, thickness = 0.5.dp)
         }
     }
 }
@@ -191,7 +192,8 @@ fun SearchView(state: MutableState<TextFieldValue>) {
 
 @Composable
 private fun AddSwitch(param: Param<Boolean>) {
-    val checkedState = remember { mutableStateOf(param.value) }
+    val checkedState = remember(param.key, param.value) { mutableStateOf(param.value) }
+
     Switch(checked = checkedState.value, onCheckedChange
     = {
         checkedState.value = it
