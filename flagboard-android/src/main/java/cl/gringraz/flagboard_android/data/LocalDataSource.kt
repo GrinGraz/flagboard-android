@@ -27,7 +27,7 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
     override fun save(ffs: Map<String, Any>) {
         ffs.entries.forEach { entry ->
             when (entry.value) {
-                is Number  -> editor.putFloat(entry.key, (entry.value as Number).toFloat())
+                is Number  -> saveNumberByType(entry.key, entry.value as Number)
                 is String  -> editor.putString(entry.key, entry.value as String)
                 is Boolean -> editor.putBoolean(entry.key, entry.value as Boolean)
                 else       -> log("$tryToSaveUnsupportedTypeMsg ${entry.value.javaClass} for key: ${entry.key}")
@@ -37,12 +37,19 @@ internal class LocalDataSource(private val sharedPreferences: SharedPreferences)
     }
 
     override fun save(key: String, value: Any) = when (value) {
-        is Number  -> editor.putFloat(key, value.toFloat()).apply()
+        is Number  -> saveNumberByType(key, value)
         is String  -> editor.putString(key, value).apply()
         is Boolean -> editor.putBoolean(key, value).apply()
         else       -> log("$tryToSaveUnsupportedTypeMsg ${value.javaClass} for key: $key")
     }
 
+    private fun saveNumberByType(key: String, value: Number) {
+        when (value) {
+            is Int -> editor.putInt(key, value).apply()
+            is Double -> editor.putFloat(key, value.toFloat()).apply()
+            is Long -> editor.putLong(key, value).apply()
+        }
+    }
     override fun getAll(): Either<FBDataError, MutableMap<String, *>> = try {
         Either.Success(sharedPreferences.all.toSortedMap())
     } catch (_: NullPointerException) {

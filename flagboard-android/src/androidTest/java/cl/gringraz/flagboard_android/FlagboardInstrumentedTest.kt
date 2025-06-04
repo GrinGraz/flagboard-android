@@ -3,7 +3,6 @@ package cl.gringraz.flagboard_android
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import cl.gringraz.flagboard_android.presentation.FlagboardInternal
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
