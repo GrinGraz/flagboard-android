@@ -26,6 +26,9 @@ internal class Repository(private val localDataSource: DataSource) {
                 localDataSource.clear()
                 localDataSource.save(featureFlag)
             }
+            ConflictStrategy.Merge -> {
+                localDataSource.save(featureFlag)
+            }
         }
     }
 
