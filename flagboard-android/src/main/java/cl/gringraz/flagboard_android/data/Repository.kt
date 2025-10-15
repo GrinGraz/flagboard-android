@@ -12,6 +12,7 @@ import org.json.JSONObject
 enum class ConflictStrategy {
     Replace,
     Keep,
+    Merge,
 }
 
 internal class Repository(private val localDataSource: DataSource) {
