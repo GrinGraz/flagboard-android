@@ -12,6 +12,7 @@ import org.json.JSONObject
 enum class ConflictStrategy {
     Replace,
     Keep,
+    Merge,
 }
 
 internal class Repository(private val localDataSource: DataSource) {
@@ -23,6 +24,9 @@ internal class Repository(private val localDataSource: DataSource) {
             }
             ConflictStrategy.Replace -> {
                 localDataSource.clear()
+                localDataSource.save(featureFlag)
+            }
+            ConflictStrategy.Merge -> {
                 localDataSource.save(featureFlag)
             }
         }
