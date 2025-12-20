@@ -13,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.core.content.ContextCompat
 import cl.gringraz.flagboard_android.ui.theme.FlagboardTheme
 
 internal class FlagboardActivity : ComponentActivity() {
@@ -44,7 +43,7 @@ internal class FlagboardActivity : ComponentActivity() {
             if (context != null) {
                 val intent = Intent(context, FlagboardActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                ContextCompat.startActivity(context, intent, null)
+                context.startActivity(intent, null)
             }
         }
     }
