@@ -18,8 +18,9 @@ object Flagboard {
      * @see [ConflictStrategy]
      */
     @JvmStatic
-    fun init(@NonNull context: Context): Flagboard {
-        FlagboardInternal.init(context = context)
+    @JvmOverloads
+    fun init(@NonNull context: Context, source: FlagboardSource = FlagboardSource.Local): Flagboard {
+        FlagboardInternal.init(context = context, source = source)
         return this
     }
 

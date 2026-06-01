@@ -16,3 +16,7 @@ internal val tryToSaveUnsupportedTypeMsg by lazy { "try to save an unsupported d
 internal val failedInitializationMessage by lazy { "initialization failed." }
 internal val flagsLoadedAndStrategyMessage by lazy { "feature flag loading strategy is: " }
 internal val initializedWithoutDataStateMessage by lazy { "has not feature flags loaded. First call the FlagBoard.loadFlags(@NonNull featureFlagsMap: Map<String, Any>) function." }
+internal val remoteLoadStartedMessage by lazy { "remote flag fetch started." }
+internal val remoteLoadSuccessMessage by lazy { "remote flags loaded and cached." }
+internal val remoteLoadFailureMessage by lazy { "remote flag fetch failed." }
+internal val remoteNotConfiguredMessage by lazy { "remote source not configured. Call Flagboard.init with FlagboardSource.Firebase." }
