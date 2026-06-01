@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,10 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Switch
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -37,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cl.gringraz.flagboard_android.FlagboardSource
 import cl.gringraz.flagboard_android.R
 import cl.gringraz.flagboard_android.data.models.FeatureFlag
 import cl.gringraz.flagboard_android.data.models.Param
@@ -45,21 +50,65 @@ import org.json.JSONObject
 import java.util.Locale
 
 @Composable
-internal fun AppTopBar(context: Context) {
-    TopAppBar(
-        backgroundColor = Color.Black,
-        contentColor = Color.White,
-        title = { Text(text = "Flagboard") },
-        navigationIcon = {
-            IconButton(onClick = { (context as ComponentActivity).finish() }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = null)
+internal fun AppTopBar(
+    context: Context,
+    showRemoteTab: Boolean,
+    activeSource: FlagboardSource,
+    isLoading: Boolean,
+    onSourceSelected: (FlagboardSource) -> Unit,
+) {
+    val selectedTabIndex = if (activeSource is FlagboardSource.Firebase) 1 else 0
+
+    Column {
+        TopAppBar(
+            backgroundColor = Color.Black,
+            contentColor = Color.White,
+            title = { Text(text = "Flagboard") },
+            navigationIcon = {
+                IconButton(onClick = { (context as ComponentActivity).finish() }) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                }
+            },
+            actions = {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(end = 8.dp),
+                    )
+                }
+            }
+        )
+        if (showRemoteTab) {
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                backgroundColor = Color.Black,
+                contentColor = Color.White,
+            ) {
+                Tab(
+                    selected = selectedTabIndex == 0,
+                    onClick = { onSourceSelected(FlagboardSource.Local) },
+                    text = { Text("Local") },
+                )
+                Tab(
+                    selected = selectedTabIndex == 1,
+                    onClick = {
+                        val firebaseSource = FlagboardInternal.currentSource
+                            .takeIf { it is FlagboardSource.Firebase }
+                            ?: FlagboardInternal.configuredSource
+                        onSourceSelected(firebaseSource)
+                    },
+                    text = { Text("Firebase RC") },
+                )
             }
         }
-    )
+    }
 }
 
 @Composable
-internal fun FlagList(textState: MutableState<TextFieldValue>) {
+internal fun FlagList(textState: MutableState<TextFieldValue>, flags: List<FeatureFlag>) {
     val context = LocalContext.current
     var filteredList: MutableList<FeatureFlag>
     LazyColumn(
@@ -67,10 +116,9 @@ internal fun FlagList(textState: MutableState<TextFieldValue>) {
     ) {
         val searchedText = textState.value.text
         filteredList = if (searchedText.isEmpty()) {
-            FlagboardInternal.getFlags().toMutableList()
+            flags.toMutableList()
         } else {
             val resultList = mutableListOf<FeatureFlag>()
-            val flags = FlagboardInternal.getFlags().toMutableList()
             for (flag in flags) {
                 when (flag) {
                     is FeatureFlag.BooleanFlag -> {
@@ -136,8 +184,6 @@ internal fun ItemRow(modifier: Modifier = Modifier, param: Param<*>, onRowClick:
     }
 }
 
-
-
 @Composable
 fun SearchView(state: MutableState<TextFieldValue>) {
     TextField(
@@ -161,8 +207,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
             if (state.value != TextFieldValue("")) {
                 IconButton(
                     onClick = {
-                        state.value =
-                            TextFieldValue("") // Remove text from TextField when you press the 'X' icon
+                        state.value = TextFieldValue("")
                     }
                 ) {
                     Icon(
@@ -176,7 +221,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
             }
         },
         singleLine = true,
-        shape = RectangleShape, // The TextFiled has rounded corners top left and right by default
+        shape = RectangleShape,
         colors = TextFieldDefaults.textFieldColors(
             textColor = Color.White,
             cursorColor = Color.White,

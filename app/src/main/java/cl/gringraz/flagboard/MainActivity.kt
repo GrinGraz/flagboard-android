@@ -15,7 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cl.gringraz.flagboard.ui.theme.FlagboardTheme
 import cl.gringraz.flagboard_android.Flagboard
+import cl.gringraz.flagboard_android.FlagboardSource
 import cl.gringraz.flagboard_android.data.ConflictStrategy
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +38,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Dashboard() {
     val context = LocalContext.current
-    Flagboard.init(context)
+    // To enable runtime source switching in the Flagboard debug UI, provide a
+    // pre-configured FirebaseRemoteConfig instance. Without it, only local flags are shown.
+    val rc = FirebaseRemoteConfig.getInstance().apply {
+        setConfigSettingsAsync(remoteConfigSettings { minimumFetchIntervalInSeconds = 0 })
+    }
+    Flagboard.init(context, FlagboardSource.Firebase(rc))
 
     val map = mapOf(
         "Boolean flag1" to true,

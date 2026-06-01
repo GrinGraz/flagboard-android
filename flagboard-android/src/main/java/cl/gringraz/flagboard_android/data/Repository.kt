@@ -83,6 +83,11 @@ internal class Repository(private val localDataSource: DataSource) {
         else                      -> FeatureFlag.StringFlag(param = param)
     }
 
+    internal fun replaceAll(flags: Map<String, Any>) {
+        localDataSource.clear()
+        localDataSource.save(flags)
+    }
+
     fun save(key: String, value: Any) = localDataSource.save(key, value)
 
     fun clear() = localDataSource.clear()
